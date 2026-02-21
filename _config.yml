@@ -1,15 +1,17 @@
-title: "Jennifer Nguyen"
-description: "Senior Data Analyst · Turning data into decisions"
+title: "Jen (Ha) Nguyen"
+description: "Data Scientist & ML Engineer · Turning data into impact"
 url: "https://jennifer1907.github.io"
 baseurl: ""
 
 author:
-  name: "Jennifer Nguyen"
-  title: "Senior Data Analyst"
-  email: "jennifer@example.com"
-  linkedin: "https://linkedin.com/in/jennifer-nguyen"
+  name: "Jen (Ha) Nguyen"
+  title: "Data Scientist & ML Engineer"
+  email: "hanguyen.aiovn@gmail.com"
+  phone: "(417) 379-7230"
+  linkedin: "https://linkedin.com/in/ha-nguyen"
   github: "https://github.com/jennifer1907"
-  location: "San Francisco, CA"
+  kaggle: "https://kaggle.com/jenniferh"
+  location: "Missouri, USA"
 
 # Build settings
 markdown: kramdown
