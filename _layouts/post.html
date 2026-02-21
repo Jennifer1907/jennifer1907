@@ -1,0 +1,53 @@
+---
+layout: default
+---
+
+<article>
+  <header class="post-hero">
+    <div class="container--narrow">
+      <div class="post-hero__meta">
+        <a href="{{ '/blog/' | relative_url }}" style="color: var(--accent-light)">← Blog</a>
+        &nbsp;·&nbsp;
+        <span>{{ page.date | date: "%B %d, %Y" }}</span>
+        &nbsp;·&nbsp;
+        <span>{{ page.read_time | default: "5" }} min read</span>
+        {% if page.category %}
+        &nbsp;·&nbsp;
+        <span class="tag tag--accent">{{ page.category }}</span>
+        {% endif %}
+      </div>
+      <h1>{{ page.title }}</h1>
+      {% if page.excerpt %}
+      <p class="post-hero__excerpt">{{ page.excerpt }}</p>
+      {% endif %}
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+        {% for tag in page.tags %}
+        <span class="tag tag--muted">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content">
+    <div class="container--narrow">
+      {{ content }}
+
+      <nav class="post-nav">
+        {% if page.previous.url %}
+        <a href="{{ page.previous.url | relative_url }}">
+          <div class="post-nav__dir">← Previous</div>
+          <div class="post-nav__title">{{ page.previous.title }}</div>
+        </a>
+        {% else %}
+        <div></div>
+        {% endif %}
+        {% if page.next.url %}
+        <a href="{{ page.next.url | relative_url }}" style="text-align:right">
+          <div class="post-nav__dir">Next →</div>
+          <div class="post-nav__title">{{ page.next.title }}</div>
+        </a>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+</article>

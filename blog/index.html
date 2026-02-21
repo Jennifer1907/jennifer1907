@@ -1,0 +1,62 @@
+---
+layout: default
+title: "Blog"
+description: "Thoughts on data analytics, machine learning, and career insights."
+---
+
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow" style="font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);margin-bottom:.75rem;">Writing</p>
+    <h1>Blog</h1>
+    <p>I write about data analytics, machine learning, tooling, and lessons learned from the field.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+
+    <!-- Filter tabs -->
+    <div class="filter-tabs" data-target="#posts-grid">
+      <button class="filter-tab active" data-filter="all">All Posts</button>
+      <button class="filter-tab" data-filter="analytics">Analytics</button>
+      <button class="filter-tab" data-filter="ml">Machine Learning</button>
+      <button class="filter-tab" data-filter="career">Career</button>
+      <button class="filter-tab" data-filter="tools">Tools</button>
+    </div>
+
+    <div class="blog-grid" id="posts-grid">
+      {% for post in site.posts %}
+      <a class="blog-card fade-up" href="{{ post.url | relative_url }}" data-category="{{ post.category | downcase | replace: ' ', '-' }}">
+        <div class="blog-card__banner" style="background: {{ post.banner_bg | default: 'linear-gradient(135deg,#1e1e28,#2a2a3e)' }};">
+          {{ post.banner_emoji | default: "📝" }}
+        </div>
+        <div class="blog-card__body">
+          <div class="blog-card__meta">
+            {{ post.date | date: "%b %d, %Y" }}
+            {% if post.read_time %} · {{ post.read_time }} min read{% endif %}
+            {% if post.category %} · <span class="tag tag--accent" style="font-size:.7rem;padding:.15rem .5rem;">{{ post.category }}</span>{% endif %}
+          </div>
+          <h3 class="blog-card__title">{{ post.title }}</h3>
+          <p class="blog-card__excerpt">{{ post.excerpt | strip_html | truncate: 130 }}</p>
+          <div class="blog-card__footer">
+            <div style="display:flex;gap:.4rem;flex-wrap:wrap;">
+              {% for tag in post.tags limit:3 %}
+              <span class="tag tag--muted">{{ tag }}</span>
+              {% endfor %}
+            </div>
+            <span class="blog-card__read">Read →</span>
+          </div>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+
+    {% if site.posts.size == 0 %}
+    <div style="text-align:center;padding:4rem 0;color:var(--text-faint);">
+      <div style="font-size:3rem;margin-bottom:1rem;">✍️</div>
+      <p>Posts coming soon. Stay tuned!</p>
+    </div>
+    {% endif %}
+
+  </div>
+</section>

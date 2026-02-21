@@ -1,0 +1,45 @@
+title: "Jennifer Nguyen"
+description: "Senior Data Analyst · Turning data into decisions"
+url: "https://jennifer1907.github.io"
+baseurl: ""
+
+author:
+  name: "Jennifer Nguyen"
+  title: "Senior Data Analyst"
+  email: "jennifer@example.com"
+  linkedin: "https://linkedin.com/in/jennifer-nguyen"
+  github: "https://github.com/jennifer1907"
+  location: "San Francisco, CA"
+
+# Build settings
+markdown: kramdown
+theme: null
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+permalink: /blog/:year/:month/:day/:title/
+
+collections:
+  projects:
+    output: true
+    permalink: /projects/:name/
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+  - scope:
+      path: ""
+      type: "projects"
+    values:
+      layout: "project"
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor

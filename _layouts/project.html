@@ -1,0 +1,42 @@
+---
+layout: default
+---
+
+<header class="post-hero">
+  <div class="container--narrow">
+    <div class="post-hero__meta">
+      <a href="{{ '/projects/' | relative_url }}" style="color: var(--accent-light)">← Projects</a>
+      &nbsp;·&nbsp;
+      <span>{{ page.year }}</span>
+      {% if page.status %}
+      &nbsp;·&nbsp;
+      <span class="tag tag--green">{{ page.status }}</span>
+      {% endif %}
+    </div>
+    <h1>{{ page.title }}</h1>
+    {% if page.description %}
+    <p class="post-hero__excerpt">{{ page.description }}</p>
+    {% endif %}
+    <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem;align-items:center;">
+      {% for tag in page.tags %}
+      <span class="tag tag--muted">{{ tag }}</span>
+      {% endfor %}
+      {% if page.github %}
+      <a href="{{ page.github }}" class="btn btn--outline btn--sm" target="_blank" rel="noopener">
+        GitHub ↗
+      </a>
+      {% endif %}
+      {% if page.demo %}
+      <a href="{{ page.demo }}" class="btn btn--primary btn--sm" target="_blank" rel="noopener">
+        Live Demo ↗
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+<div class="post-content">
+  <div class="container--narrow">
+    {{ content }}
+  </div>
+</div>

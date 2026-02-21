@@ -1,0 +1,29 @@
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <a href="{{ '/' | relative_url }}" class="nav__logo">
+    Jennifer<span>.</span>
+  </a>
+
+  <ul class="nav__links">
+    <li><a href="{{ '/' | relative_url }}">Home</a></li>
+    <li><a href="{{ '/resume/' | relative_url }}">Resume</a></li>
+    <li><a href="{{ '/projects/' | relative_url }}">Projects</a></li>
+    <li><a href="{{ '/blog/' | relative_url }}">Blog</a></li>
+    <li><a href="{{ '/awards/' | relative_url }}">Awards</a></li>
+    <li><a href="{{ '/contact/' | relative_url }}" class="nav__cta">Contact</a></li>
+  </ul>
+
+  <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile overlay -->
+<div class="nav__mobile-menu" role="dialog" aria-label="Mobile navigation">
+  <button class="nav__mobile-close" aria-label="Close menu">✕</button>
+  <a href="{{ '/' | relative_url }}">Home</a>
+  <a href="{{ '/resume/' | relative_url }}">Resume</a>
+  <a href="{{ '/projects/' | relative_url }}">Projects</a>
+  <a href="{{ '/blog/' | relative_url }}">Blog</a>
+  <a href="{{ '/awards/' | relative_url }}">Awards</a>
+  <a href="{{ '/contact/' | relative_url }}">Contact</a>
+</div>

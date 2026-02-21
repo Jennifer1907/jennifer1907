@@ -1,0 +1,106 @@
+---
+layout: default
+title: "Contact"
+description: "Get in touch with Jennifer Nguyen."
+---
+
+<header class="page-hero">
+  <div class="container">
+    <p class="eyebrow" style="font-size:.8rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--accent-light);margin-bottom:.75rem;">Get in Touch</p>
+    <h1>Let's Connect</h1>
+    <p>I'm open to full-time roles, consulting projects, speaking invitations, and collaboration on interesting data problems.</p>
+  </div>
+</header>
+
+<section class="section">
+  <div class="container">
+    <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:4rem;max-width:900px;margin:0 auto;">
+
+      <!-- Info column -->
+      <div class="fade-up">
+        <h3 style="color:#fff;margin-bottom:1.5rem;">Ways to reach me</h3>
+
+        <div style="display:flex;flex-direction:column;gap:1.25rem;">
+          <div class="card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;">
+            <div class="card__icon bg-accent" style="width:40px;height:40px;font-size:1.1rem;margin-bottom:0;flex-shrink:0;">📧</div>
+            <div>
+              <div style="font-size:.75rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;">Email</div>
+              <a href="mailto:jennifer@example.com" style="color:var(--text);font-weight:600;font-size:.95rem;">jennifer@example.com</a>
+            </div>
+          </div>
+
+          <div class="card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;">
+            <div class="card__icon bg-accent" style="width:40px;height:40px;font-size:1.1rem;margin-bottom:0;flex-shrink:0;">💼</div>
+            <div>
+              <div style="font-size:.75rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;">LinkedIn</div>
+              <a href="https://linkedin.com/in/jennifer-nguyen" target="_blank" rel="noopener" style="color:var(--text);font-weight:600;font-size:.95rem;">linkedin.com/in/jennifer-nguyen</a>
+            </div>
+          </div>
+
+          <div class="card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;">
+            <div class="card__icon bg-green" style="width:40px;height:40px;font-size:1.1rem;margin-bottom:0;flex-shrink:0;">🐙</div>
+            <div>
+              <div style="font-size:.75rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;">GitHub</div>
+              <a href="https://github.com/jennifer1907" target="_blank" rel="noopener" style="color:var(--text);font-weight:600;font-size:.95rem;">github.com/jennifer1907</a>
+            </div>
+          </div>
+
+          <div class="card" style="display:flex;align-items:center;gap:1rem;padding:1.25rem;">
+            <div class="card__icon bg-amber" style="width:40px;height:40px;font-size:1.1rem;margin-bottom:0;flex-shrink:0;">📍</div>
+            <div>
+              <div style="font-size:.75rem;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;">Location</div>
+              <span style="color:var(--text);font-weight:600;font-size:.95rem;">San Francisco, CA · Open to remote</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form column -->
+      <div class="fade-up" data-delay="1">
+        <form name="contact" netlify action="/contact/thanks/" method="POST"
+              style="display:flex;flex-direction:column;gap:1.25rem;">
+          <input type="hidden" name="form-name" value="contact">
+
+          <div>
+            <label style="display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;">Name</label>
+            <input type="text" name="name" required placeholder="Your full name"
+              style="width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;transition:border-color var(--transition);"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+
+          <div>
+            <label style="display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;">Email</label>
+            <input type="email" name="email" required placeholder="you@example.com"
+              style="width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;transition:border-color var(--transition);"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+
+          <div>
+            <label style="display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;">Subject</label>
+            <select name="subject"
+              style="width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;appearance:none;cursor:pointer;">
+              <option value="">Select a topic…</option>
+              <option>Full-time opportunity</option>
+              <option>Consulting / freelance project</option>
+              <option>Speaking invitation</option>
+              <option>Collaboration</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <div>
+            <label style="display:block;font-size:.8rem;font-weight:600;color:var(--text-muted);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.06em;">Message</label>
+            <textarea name="message" rows="5" required placeholder="Tell me about your project or question…"
+              style="width:100%;background:var(--bg-2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:.75rem 1rem;color:var(--text);font-size:.95rem;outline:none;resize:vertical;font-family:inherit;transition:border-color var(--transition);"
+              onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn--primary" style="width:100%;justify-content:center;padding:.85rem;">
+            Send Message ✉️
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</section>
