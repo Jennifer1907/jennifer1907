@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Data Scientist & ML Engineer · Turning data into impact">
+<meta name="author" content="Jen (Ha) Nguyen">
+
+<!-- Open Graph -->
+<meta property="og:title" content="Hello, world">
+<meta property="og:description" content="Data Scientist & ML Engineer · Turning data into impact">
+<meta property="og:type" content="website">
+<meta property="og:url" content="http://localhost:4001/blog/2025/11/10/sql-window-functions/">
+
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Hello, world">
+
+<title>Hello, world · Jen (Ha) Nguyen</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@500;700;800&display=swap" rel="stylesheet">
+
+<!-- Icons (Lucide via CDN) -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+<!-- Styles -->
+<link rel="stylesheet" href="/assets/css/main.css">
+
+</head>
+<body>
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+  <a href="/" class="nav__logo">
+    Jennifer<span>.</span>
+  </a>
+
+  <ul class="nav__links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/resume/">Resume</a></li>
+    <!-- <li><a href="/projects/">Projects</a></li> -->
+    <li><a href="/blog/">Blog</a></li>
+    <li><a href="/awards/">Awards</a></li>
+    <li><a href="/contact/" class="nav__cta">Contact</a></li>
+  </ul>
+
+  <button class="nav__hamburger" aria-label="Open menu" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- Mobile overlay -->
+<div class="nav__mobile-menu" role="dialog" aria-label="Mobile navigation">
+  <button class="nav__mobile-close" aria-label="Close menu">✕</button>
+  <a href="/">Home</a>
+  <a href="/resume/">Resume</a>
+  <!-- <a href="/projects/">Projects</a> -->
+  <a href="/blog/">Blog</a>
+  <a href="/awards/">Awards</a>
+  <a href="/contact/">Contact</a>
+</div>
+
+
+  <main>
+    <article>
+  <header class="post-hero">
+    <div class="container--narrow">
+      <div class="post-hero__meta">
+        <a href="/blog/" style="color: var(--accent-light)">← Blog</a>
+        &nbsp;·&nbsp;
+        <span>November 10, 2025</span>
+        &nbsp;·&nbsp;
+        <span>8 min read</span>
+        
+        &nbsp;·&nbsp;
+        <span class="tag tag--accent">analytics</span>
+        
+      </div>
+      <h1>Hello, world</h1>
+      
+      <p class="post-hero__excerpt">Window functions are the single biggest leap in SQL productivity. Here's a practical guide with real-world examples from my work at Stripe and Shopify.</p>
+      
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.5rem;">
+        
+        <span class="tag tag--muted">SQL</span>
+        
+        <span class="tag tag--muted">Analytics</span>
+        
+        <span class="tag tag--muted">Data Engineering</span>
+        
+      </div>
+    </div>
+  </header>
+
+  <div class="post-content">
+    <div class="container--narrow">
+      <p>Window functions are, in my opinion, the single biggest productivity leap available to a data analyst who already knows basic SQL. They let you perform calculations across a set of rows that are related to the current row—without collapsing them into groups like <code class="language-plaintext highlighter-rouge">GROUP BY</code> does.</p>
+
+<p>After years of using them daily at Stripe and Shopify, here are the patterns I reach for most.</p>
+
+<h2 id="why-window-functions">Why Window Functions?</h2>
+
+<p>Consider a classic problem: <em>for each user, show their latest purchase alongside their all-time total spend.</em></p>
+
+<p>Without window functions, you’d write multiple CTEs or subqueries. With them:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span>
+  <span class="n">user_id</span><span class="p">,</span>
+  <span class="n">order_id</span><span class="p">,</span>
+  <span class="n">amount</span><span class="p">,</span>
+  <span class="n">order_date</span><span class="p">,</span>
+  <span class="k">SUM</span><span class="p">(</span><span class="n">amount</span><span class="p">)</span>  <span class="n">OVER</span> <span class="p">(</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">user_id</span><span class="p">)</span>                          <span class="k">AS</span> <span class="n">lifetime_spend</span><span class="p">,</span>
+  <span class="n">RANK</span><span class="p">()</span>       <span class="n">OVER</span> <span class="p">(</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">user_id</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">order_date</span> <span class="k">DESC</span><span class="p">)</span> <span class="k">AS</span> <span class="n">recency_rank</span>
+<span class="k">FROM</span> <span class="n">orders</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Clean, readable, and single-pass.</p>
+
+<h2 id="the-anatomy-of-a-window-function">The Anatomy of a Window Function</h2>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function_name</span><span class="p">([</span><span class="n">expression</span><span class="p">])</span>
+  <span class="n">OVER</span> <span class="p">(</span>
+    <span class="p">[</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">column_list</span><span class="p">]</span>
+    <span class="p">[</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="n">column_list</span><span class="p">]</span>
+    <span class="p">[</span><span class="k">ROWS</span><span class="o">/</span><span class="n">RANGE</span> <span class="n">frame_spec</span><span class="p">]</span>
+  <span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>PARTITION BY</strong> — like <code class="language-plaintext highlighter-rouge">GROUP BY</code> but doesn’t collapse rows</li>
+  <li><strong>ORDER BY</strong> — defines the ordering within each partition</li>
+  <li><strong>frame spec</strong> — controls which rows are included in the calculation</li>
+</ul>
+
+<h2 id="the-functions-i-use-daily">The Functions I Use Daily</h2>
+
+<h3 id="1-row_number-rank-dense_rank">1. <code class="language-plaintext highlighter-rouge">ROW_NUMBER()</code>, <code class="language-plaintext highlighter-rouge">RANK()</code>, <code class="language-plaintext highlighter-rouge">DENSE_RANK()</code></h3>
+
+<p>Perfect for deduplication and top-N queries:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- Get the most recent record per user</span>
+<span class="k">WITH</span> <span class="n">ranked</span> <span class="k">AS</span> <span class="p">(</span>
+  <span class="k">SELECT</span> <span class="o">*</span><span class="p">,</span>
+    <span class="n">ROW_NUMBER</span><span class="p">()</span> <span class="n">OVER</span> <span class="p">(</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">user_id</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">created_at</span> <span class="k">DESC</span><span class="p">)</span> <span class="k">AS</span> <span class="n">rn</span>
+  <span class="k">FROM</span> <span class="n">events</span>
+<span class="p">)</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">ranked</span> <span class="k">WHERE</span> <span class="n">rn</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>I use <code class="language-plaintext highlighter-rouge">ROW_NUMBER()</code> when I need exactly one row per partition, <code class="language-plaintext highlighter-rouge">RANK()</code> when ties should share a rank and leave a gap, and <code class="language-plaintext highlighter-rouge">DENSE_RANK()</code> when ties should share a rank without gaps.</p>
+</blockquote>
+
+<h3 id="2-lag-and-lead">2. <code class="language-plaintext highlighter-rouge">LAG()</code> and <code class="language-plaintext highlighter-rouge">LEAD()</code></h3>
+
+<p>Invaluable for time-series analysis:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span>
+  <span class="nb">date</span><span class="p">,</span>
+  <span class="n">revenue</span><span class="p">,</span>
+  <span class="n">LAG</span><span class="p">(</span><span class="n">revenue</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="nb">date</span><span class="p">)</span> <span class="k">AS</span> <span class="n">prev_day_revenue</span><span class="p">,</span>
+  <span class="n">revenue</span> <span class="o">-</span> <span class="n">LAG</span><span class="p">(</span><span class="n">revenue</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="nb">date</span><span class="p">)</span> <span class="k">AS</span> <span class="n">day_over_day_change</span><span class="p">,</span>
+  <span class="n">ROUND</span><span class="p">(</span>
+    <span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="p">(</span><span class="n">revenue</span> <span class="o">-</span> <span class="n">LAG</span><span class="p">(</span><span class="n">revenue</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="nb">date</span><span class="p">))</span>
+          <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="n">LAG</span><span class="p">(</span><span class="n">revenue</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="nb">date</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="mi">2</span>
+  <span class="p">)</span> <span class="k">AS</span> <span class="n">pct_change</span>
+<span class="k">FROM</span> <span class="n">daily_revenue</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="3-rolling-aggregates-with-frame-specs">3. Rolling Aggregates with Frame Specs</h3>
+
+<p>One of my favourite patterns at Stripe was calculating a 7-day rolling fraud rate:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span>
+  <span class="n">event_date</span><span class="p">,</span>
+  <span class="n">fraud_count</span><span class="p">,</span>
+  <span class="n">total_txns</span><span class="p">,</span>
+  <span class="k">SUM</span><span class="p">(</span><span class="n">fraud_count</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">event_date</span>
+    <span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">6</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="k">CURRENT</span> <span class="k">ROW</span>
+  <span class="p">)</span> <span class="k">AS</span> <span class="n">rolling_7d_fraud</span><span class="p">,</span>
+  <span class="k">AVG</span><span class="p">(</span><span class="n">fraud_count</span><span class="p">::</span><span class="nb">FLOAT</span> <span class="o">/</span> <span class="k">NULLIF</span><span class="p">(</span><span class="n">total_txns</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="n">OVER</span> <span class="p">(</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">event_date</span>
+    <span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="mi">6</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="k">CURRENT</span> <span class="k">ROW</span>
+  <span class="p">)</span> <span class="k">AS</span> <span class="n">rolling_7d_fraud_rate</span>
+<span class="k">FROM</span> <span class="n">daily_fraud_metrics</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="4-first_value-and-last_value">4. <code class="language-plaintext highlighter-rouge">FIRST_VALUE()</code> and <code class="language-plaintext highlighter-rouge">LAST_VALUE()</code></h3>
+
+<p>Great for comparing each row to a baseline:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span>
+  <span class="n">product_id</span><span class="p">,</span>
+  <span class="n">sale_date</span><span class="p">,</span>
+  <span class="n">price</span><span class="p">,</span>
+  <span class="n">FIRST_VALUE</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span>
+    <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">product_id</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">sale_date</span>
+    <span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="n">UNBOUNDED</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="k">CURRENT</span> <span class="k">ROW</span>
+  <span class="p">)</span> <span class="k">AS</span> <span class="n">first_ever_price</span><span class="p">,</span>
+  <span class="n">price</span> <span class="o">-</span> <span class="n">FIRST_VALUE</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span>
+    <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">product_id</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">sale_date</span>
+    <span class="k">ROWS</span> <span class="k">BETWEEN</span> <span class="n">UNBOUNDED</span> <span class="n">PRECEDING</span> <span class="k">AND</span> <span class="k">CURRENT</span> <span class="k">ROW</span>
+  <span class="p">)</span> <span class="k">AS</span> <span class="n">price_drift</span>
+<span class="k">FROM</span> <span class="n">price_history</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h3 id="5-ntile">5. <code class="language-plaintext highlighter-rouge">NTILE()</code></h3>
+
+<p>Useful for percentile-based segmentation:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">SELECT</span>
+  <span class="n">customer_id</span><span class="p">,</span>
+  <span class="n">lifetime_value</span><span class="p">,</span>
+  <span class="n">NTILE</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span> <span class="n">OVER</span> <span class="p">(</span><span class="k">ORDER</span> <span class="k">BY</span> <span class="n">lifetime_value</span><span class="p">)</span> <span class="k">AS</span> <span class="n">ltv_decile</span>
+<span class="k">FROM</span> <span class="n">customers</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="performance-considerations">Performance Considerations</h2>
+
+<p>Window functions are generally efficient, but watch out for:</p>
+
+<ul>
+  <li><strong>Multiple <code class="language-plaintext highlighter-rouge">OVER</code> clauses</strong>: BigQuery and Snowflake can sometimes optimise repeated windows if they’re identical—use a CTE or <code class="language-plaintext highlighter-rouge">QUALIFY</code> to avoid re-scanning.</li>
+  <li><strong>Large frames</strong>: <code class="language-plaintext highlighter-rouge">UNBOUNDED PRECEDING</code> over an unsorted table can be expensive. Make sure your ORDER BY column is indexed or clustered where possible.</li>
+  <li><strong><code class="language-plaintext highlighter-rouge">QUALIFY</code> clause</strong>: In BigQuery/Snowflake, you can filter on window function results without a subquery: <code class="language-plaintext highlighter-rouge">QUALIFY ROW_NUMBER() OVER (...) = 1</code>.</li>
+</ul>
+
+<h2 id="a-real-world-pattern-cohort-retention">A Real-World Pattern: Cohort Retention</h2>
+
+<p>At Shopify I built retention analyses using nothing but window functions:</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">WITH</span> <span class="n">cohorts</span> <span class="k">AS</span> <span class="p">(</span>
+  <span class="k">SELECT</span>
+    <span class="n">user_id</span><span class="p">,</span>
+    <span class="n">DATE_TRUNC</span><span class="p">(</span><span class="s1">'month'</span><span class="p">,</span> <span class="n">first_order_date</span><span class="p">)</span> <span class="k">AS</span> <span class="n">cohort_month</span>
+  <span class="k">FROM</span> <span class="n">user_first_orders</span>
+<span class="p">),</span>
+<span class="n">activity</span> <span class="k">AS</span> <span class="p">(</span>
+  <span class="k">SELECT</span>
+    <span class="n">o</span><span class="p">.</span><span class="n">user_id</span><span class="p">,</span>
+    <span class="k">c</span><span class="p">.</span><span class="n">cohort_month</span><span class="p">,</span>
+    <span class="n">DATE_DIFF</span><span class="p">(</span>
+      <span class="n">DATE_TRUNC</span><span class="p">(</span><span class="s1">'month'</span><span class="p">,</span> <span class="n">o</span><span class="p">.</span><span class="n">order_date</span><span class="p">),</span>
+      <span class="k">c</span><span class="p">.</span><span class="n">cohort_month</span><span class="p">,</span>
+      <span class="k">MONTH</span>
+    <span class="p">)</span> <span class="k">AS</span> <span class="n">months_since_first</span>
+  <span class="k">FROM</span> <span class="n">orders</span> <span class="n">o</span>
+  <span class="k">JOIN</span> <span class="n">cohorts</span> <span class="k">c</span> <span class="k">USING</span> <span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="k">SELECT</span>
+  <span class="n">cohort_month</span><span class="p">,</span>
+  <span class="n">months_since_first</span><span class="p">,</span>
+  <span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">user_id</span><span class="p">)</span>                    <span class="k">AS</span> <span class="n">active_users</span><span class="p">,</span>
+  <span class="n">FIRST_VALUE</span><span class="p">(</span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">user_id</span><span class="p">))</span> <span class="n">OVER</span> <span class="p">(</span>
+    <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">cohort_month</span>
+    <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">months_since_first</span>
+  <span class="p">)</span>                                          <span class="k">AS</span> <span class="n">cohort_size</span><span class="p">,</span>
+  <span class="n">ROUND</span><span class="p">(</span><span class="mi">100</span><span class="p">.</span><span class="mi">0</span> <span class="o">*</span> <span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">user_id</span><span class="p">)</span>
+    <span class="o">/</span> <span class="n">FIRST_VALUE</span><span class="p">(</span><span class="k">COUNT</span><span class="p">(</span><span class="k">DISTINCT</span> <span class="n">user_id</span><span class="p">))</span> <span class="n">OVER</span> <span class="p">(</span>
+        <span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">cohort_month</span>
+        <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">months_since_first</span>
+      <span class="p">),</span> <span class="mi">1</span><span class="p">)</span>                                  <span class="k">AS</span> <span class="n">retention_pct</span>
+<span class="k">FROM</span> <span class="n">activity</span>
+<span class="k">GROUP</span> <span class="k">BY</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h2 id="wrap-up">Wrap Up</h2>
+
+<p>Window functions take maybe an afternoon to learn and will save you hours every week. The patterns above cover 90% of what I encounter in practice. The key muscle to develop is recognising <em>when</em> a problem is a window function problem—usually any time you hear “for each X, show Y alongside Z” or “compare each row to the previous/next.”</p>
+
+<p>If you want to go deeper, I recommend practising on <a href="https://mode.com/sql-tutorial/">Mode’s SQL School</a> and LeetCode’s SQL problems. Happy querying!</p>
+
+
+      <nav class="post-nav">
+        
+        <a href="/blog/2025/10/05/churn-prediction-guide/">
+          <div class="post-nav__dir">← Previous</div>
+          <div class="post-nav__title">Building a Production Churn Prediction Model: End-to-End</div>
+        </a>
+        
+        
+      </nav>
+    </div>
+  </div>
+</article>
+
+  </main>
+
+  <footer class="footer">
+  <div class="footer__socials">
+    <a href="https://linkedin.com/in/ha-nguyen" class="footer__social" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+    </a>
+    <a href="https://github.com/jennifer1907" class="footer__social" target="_blank" rel="noopener" aria-label="GitHub">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+    </a>
+    <a href="https://kaggle.com/jenniferh" class="footer__social" target="_blank" rel="noopener" aria-label="Kaggle">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.825 23.859c-.022.092-.117.141-.281.141h-3.139c-.187 0-.351-.082-.492-.248l-5.178-6.589-1.448 1.374v5.111c0 .235-.117.352-.351.352H5.505c-.236 0-.354-.117-.354-.352V.353c0-.233.118-.353.354-.353h2.431c.234 0 .351.12.351.353v14.343l6.203-6.272c.165-.165.33-.246.495-.246h3.239c.144 0 .236.06.285.18.046.149.034.255-.036.315l-6.555 6.344 6.836 8.507c.095.104.117.208.07.333z"/></svg>
+    </a>
+    <a href="mailto:hanguyen.aiovn@gmail.com" class="footer__social" aria-label="Email">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </a>
+  </div>
+
+  <ul class="footer__links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/resume/">Resume</a></li>
+    <li><a href="/projects/">Projects</a></li>
+    <li><a href="/blog/">Blog</a></li>
+    <li><a href="/awards/">Awards</a></li>
+  </ul>
+
+  <p class="footer__copy">
+    © 2026 Jen (Ha) Nguyen · Built with Jekyll &amp; ♥
+  </p>
+</footer>
+
+
+  <script src="/assets/js/main.js"></script>
+  <script>if (window.lucide) lucide.createIcons();</script>
+</body>
+</html>
