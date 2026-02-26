@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
-<loc>https://jennifer1907.github.io/contact/</loc>
+<loc>http://localhost:4001/contact/</loc>
 </url>
 <url>
-<loc>https://jennifer1907.github.io/projects/</loc>
+<loc>http://localhost:4001/projects/</loc>
 </url>
 <url>
-<loc>https://jennifer1907.github.io/resume/</loc>
+<loc>http://localhost:4001/resume/</loc>
 </url>
 <url>
-<loc>https://jennifer1907.github.io/blog/</loc>
+<loc>http://localhost:4001/blog/</loc>
 </url>
 <url>
-<loc>https://jennifer1907.github.io/awards/</loc>
+<loc>http://localhost:4001/awards/</loc>
 </url>
 <url>
-<loc>https://jennifer1907.github.io/</loc>
+<loc>http://localhost:4001/</loc>
 </url>
 <url>
-<loc>https://jennifer1907.github.io/assets/files/Ha-Nguyen-Resume.pdf</loc>
+<loc>http://localhost:4001/assets/files/Ha-Nguyen-Resume.pdf</loc>
 <lastmod>2026-02-26T11:19:36+07:00</lastmod>
 </url>
 </urlset>
