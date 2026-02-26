@@ -213,13 +213,11 @@ description: "Get in touch with Jen (Ha) Nguyen."
       <!-- Form column -->
       <div class="fade-up" data-delay="1">
         <form
-          name="contact"
-          netlify
-          action="/contact/thanks/"
+          action="https://api.web3forms.com/submit"
           method="POST"
           style="display: flex; flex-direction: column; gap: 1.25rem"
         >
-          <input type="hidden" name="form-name" value="contact" />
+          <input type="hidden" name="access_key" value="{{ site.env.WEB3FORMS_ACCESS_KEY }}" />
 
           <div>
             <label

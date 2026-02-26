@@ -20,6 +20,7 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+  - jekyll-environment-variables
 
 permalink: /blog/:year/:month/:day/:title/
 
