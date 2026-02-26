@@ -36,7 +36,7 @@
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; overflow-x: hidden; }
 
 body {
   font-family: var(--font-sans);
@@ -44,6 +44,7 @@ body {
   color: var(--text);
   line-height: 1.7;
   overflow-x: hidden;
+  width: 100%;
 }
 
 a { color: var(--accent); text-decoration: none; transition: color var(--transition); }
@@ -302,9 +303,11 @@ pre code { background: none; border: none; padding: 0; color: var(--text); }
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 2rem;
-  width: 340px;
+  width: 100%;
+  max-width: 340px;
   box-shadow: var(--shadow-lg);
   position: relative;
+  margin: 0 auto;
 }
 .hero__card::before {
   content: '';
@@ -867,6 +870,12 @@ pre code { background: none; border: none; padding: 0; color: var(--text); }
 /* ============================================================
    SECTION SPECIFIC GRIDS
    ============================================================ */
+.about-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1.4fr;
@@ -885,8 +894,32 @@ pre code { background: none; border: none; padding: 0; color: var(--text); }
    RESPONSIVE
    ============================================================ */
 @media (max-width: 900px) {
-  .hero__grid { grid-template-columns: 1fr; gap: 2.5rem; }
-  .hero__visual { display: none; }
+  .hero__grid { grid-template-columns: 1fr; gap: 2.5rem; text-align: center; }
+  .hero__subtitle { margin-left: auto; margin-right: auto; }
+  .hero__actions { justify-content: center; }
+  .hero__stats { justify-content: center; }
+  .hero__visual { margin: 0 auto; }
+  .section-header { text-align: center; }
+  .section-header p { margin-left: auto; margin-right: auto; }
+  
+  .about-grid {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(280px, 85vw);
+    overflow-x: auto;
+    padding-bottom: 1rem;
+    scroll-snap-type: x mandatory;
+    margin-right: -2rem; /* Bleed to the edge of the container */
+    padding-right: 2rem;
+    scrollbar-width: none; /* Firefox */
+  }
+  .about-grid::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+  .about-grid > .card {
+    scroll-snap-align: start;
+  }
+
   .resume-grid { grid-template-columns: 1fr; gap: 2.5rem; }
   .skills-grid { grid-template-columns: 1fr; }
   .nav__links, .nav__cta { display: none; }
